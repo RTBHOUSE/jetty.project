@@ -13,6 +13,7 @@
 
 package org.eclipse.jetty.security;
 
+import java.util.Collection;
 import javax.servlet.ServletContext;
 
 import org.eclipse.jetty.security.Authenticator.AuthConfiguration;
@@ -23,6 +24,7 @@ import org.eclipse.jetty.security.authentication.DigestAuthenticator;
 import org.eclipse.jetty.security.authentication.FormAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 /**
  * The Default Authenticator Factory.
@@ -64,7 +66,17 @@ public class DefaultAuthenticatorFactory implements Authenticator.Factory
         else if (Constraint.__NEGOTIATE_AUTH.equalsIgnoreCase(auth)) // see Bug #377076
             authenticator = new ConfigurableSpnegoAuthenticator(Constraint.__NEGOTIATE_AUTH);
         if (Constraint.__CERT_AUTH.equalsIgnoreCase(auth) || Constraint.__CERT_AUTH2.equalsIgnoreCase(auth))
-            authenticator = new ClientCertAuthenticator();
+        {
+            Collection<SslContextFactory> sslContextFactories = server.getBeans(SslContextFactory.class);
+            if (sslContextFactories.size() != 1)
+            {
+                authenticator = new ClientCertAuthenticator();
+            }
+            else
+            {
+                authenticator = new ClientCertAuthenticator(sslContextFactories.iterator().next());
+            }
+        }
 
         return authenticator;
     }
