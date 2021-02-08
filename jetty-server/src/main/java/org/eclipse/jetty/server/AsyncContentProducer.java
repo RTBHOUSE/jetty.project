@@ -156,8 +156,6 @@ class AsyncContentProducer implements ContentProducer
 
     private void failCurrentContent(Throwable x)
     {
-        HttpInput.ErrorContent errorContent = new HttpInput.ErrorContent(x);
-
         if (_transformedContent != null && !_transformedContent.isSpecial())
         {
             if (_transformedContent != _rawContent)
@@ -179,6 +177,7 @@ class AsyncContentProducer implements ContentProducer
             _rawContent = null;
         }
 
+        HttpInput.ErrorContent errorContent = new HttpInput.ErrorContent(x);
         _transformedContent = errorContent;
         _rawContent = errorContent;
     }
