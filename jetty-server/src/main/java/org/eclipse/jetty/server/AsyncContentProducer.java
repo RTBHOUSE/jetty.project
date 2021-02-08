@@ -32,7 +32,6 @@ class AsyncContentProducer implements ContentProducer
     private HttpInput.Interceptor _interceptor;
     private HttpInput.Content _rawContent;
     private HttpInput.Content _transformedContent;
-    private boolean _error;
     private long _firstByteTimeStamp = Long.MIN_VALUE;
     private long _rawContentArrived;
 
@@ -49,7 +48,6 @@ class AsyncContentProducer implements ContentProducer
         _interceptor = null;
         _rawContent = null;
         _transformedContent = null;
-        _error = false;
         _firstByteTimeStamp = Long.MIN_VALUE;
         _rawContentArrived = 0L;
     }
@@ -88,9 +86,10 @@ class AsyncContentProducer implements ContentProducer
     @Override
     public boolean isError()
     {
+        boolean error = _rawContent != null && _rawContent.getError() != null;
         if (LOG.isDebugEnabled())
-            LOG.debug("isError = {} {}", _error, this);
-        return _error;
+            LOG.debug("isError = {} {}", error, this);
+        return error;
     }
 
     @Override
@@ -279,9 +278,15 @@ class AsyncContentProducer implements ContentProducer
             {
                 // TODO does EOF need to be passed to the interceptors?
 
-                _error = _rawContent.getError() != null;
+                // In case the _rawContent was set by consumeAll(), check the httpChannel
+                // to see if it has a more precise error. Otherwise, the exact same
+                // special content will be returned by the httpChannel.
+                HttpInput.Content refreshedRawContent = produceRawContent();
+                if (refreshedRawContent != null)
+                    _rawContent = refreshedRawContent;
+
                 if (LOG.isDebugEnabled())
-                    LOG.debug("raw content is special (with error = {}), returning it {}", _error, this);
+                    LOG.debug("raw content is special, returning it {}", this);
                 return _rawContent;
             }
 
@@ -360,13 +365,12 @@ class AsyncContentProducer implements ContentProducer
     @Override
     public String toString()
     {
-        return String.format("%s@%x[r=%s,t=%s,i=%s,error=%b,c=%s]",
+        return String.format("%s@%x[r=%s,t=%s,i=%s,c=%s]",
             getClass().getSimpleName(),
             hashCode(),
             _rawContent,
             _transformedContent,
             _interceptor,
-            _error,
             _httpChannel
         );
     }
