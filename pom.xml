@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.eclipse.jetty</groupId>
   <artifactId>jetty-project</artifactId>
-  <version>10.0.1-SNAPSHOT</version>
+  <version>10.0.7-RTBHOUSE-SNAPSHOT</version>
   <name>Jetty :: Project</name>
   <description>The Eclipse Jetty Project</description>
   <packaging>pom</packaging>
@@ -1561,23 +1561,8 @@
       </activation>
       <repositories>
         <repository>
-          <id>jetty-snapshots</id>
-          <name>jetty-snapshots</name>
-          <url>https://oss.sonatype.org/content/repositories/jetty-snapshots</url>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>oss.snapshots</id>
-          <name>OSS Snapshots</name>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
+          <id>Adpilot</id>
+          <url>http://nexus.adpilot-rtb.net:8081/content/groups/public</url>
         </repository>
       </repositories>
     </profile>
@@ -1698,18 +1683,14 @@
 
   <distributionManagement>
     <repository>
-      <id>oss.sonatype.org</id>
-      <name>Jetty Staging Repository</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>Adpilot</id>
+      <name>Internal Releases</name>
+      <url>http://nexus.adpilot-rtb.net:8081/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>oss.sonatype.org</id>
-      <name>Jetty Snapshot Repository</name>
-      <url>https://oss.sonatype.org/content/repositories/jetty-snapshots/</url>
-    </snapshotRepository>
-    <site>
-      <id>jetty.eclipse.website</id>
-      <url>scp://build.eclipse.org:/home/data/httpd/download.eclipse.org/jetty/${project.version}/</url>
-    </site>
+      <id>Adpilot-snapshots</id>
+      <name>Internal Snapshots</name>
+      <url>http://nexus.adpilot-rtb.net:8081/content/repositories/snapshots/</url>
+    </snapshotRepository> 
   </distributionManagement>
 </project>
